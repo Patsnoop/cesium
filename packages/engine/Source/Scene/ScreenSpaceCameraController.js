@@ -573,7 +573,18 @@ function handleZoom(
   const maxHeight = object.maximumZoomDistance;
 
   const minDistance = distanceMeasure - minHeight;
-  let zoomRate = zoomFactor * minDistance;
+
+  const timeStamps = object._scene.frameState?.timeStamps;
+  let fpsMultiplier = 1;
+  if (timeStamps?.length === 10) {
+    const elapsedTime = (timeStamps[0] - timeStamps[9]) / 9;
+    const fps = 1 / (elapsedTime / 1000);
+    // target refresh rate of 30hz
+    fpsMultiplier = 30 / fps;
+  }
+
+  let zoomRate = zoomFactor * minDistance * fpsMultiplier;
+
   zoomRate = CesiumMath.clamp(
     zoomRate,
     object._minimumZoomRate,
