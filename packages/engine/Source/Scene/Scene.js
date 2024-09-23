@@ -77,6 +77,7 @@ import View from "./View.js";
 import DebugInspector from "./DebugInspector.js";
 import VoxelCell from "./VoxelCell.js";
 import VoxelPrimitive from "./VoxelPrimitive.js";
+import getTimestamp from "../Core/getTimestamp.js";
 
 const requestRenderAfterFrame = function (scene) {
   return function () {
@@ -748,6 +749,7 @@ function Scene(options) {
 
   // Give frameState, camera, and screen space camera controller initial state before rendering
   updateFrameNumber(this, 0.0, JulianDate.now());
+  this.updateFrameTimeStamp();
   this.updateFrameState();
   this.initializeFrame();
 }
@@ -1916,6 +1918,18 @@ function updateFrameNumber(scene, frameNumber, time) {
   frameState.frameNumber = frameNumber;
   frameState.time = JulianDate.clone(time, frameState.time);
 }
+
+/**
+ * @private
+ */
+Scene.prototype.updateFrameTimeStamp = function () {
+  const frameState = this._frameState;
+  const time = getTimestamp();
+  frameState.timeStamps.unshift(time);
+  if (frameState.timeStamps.length > 10) {
+    frameState.timeStamps.pop();
+  }
+};
 
 /**
  * @private
@@ -4096,6 +4110,7 @@ Scene.prototype.render = function (time) {
       1.0
     );
     updateFrameNumber(this, frameNumber, time);
+    this.updateFrameTimeStamp();
     frameState.newFrame = true;
   }
 
