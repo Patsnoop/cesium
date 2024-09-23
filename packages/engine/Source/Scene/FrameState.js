@@ -105,6 +105,14 @@ function FrameState(context, creditDisplay, jobScheduler) {
   this.time = undefined;
 
   /**
+   * The scene's 10 most recent timestamps.
+   *
+   * @type {JulianDate[]}
+   * @default []
+   */
+  this.timeStamps = [];
+
+  /**
    * The job scheduler.
    *
    * @type {JobScheduler}
